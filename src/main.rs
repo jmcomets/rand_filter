@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate clap;
 extern crate rand;
 
@@ -5,7 +6,7 @@ use std::io;
 use std::io::{Write, BufRead};
 use std::process;
 
-use clap::{App, Arg};
+use clap::App;
 use rand::Rng;
 use rand::distributions::{IndependentSample, Range};
 
@@ -16,19 +17,8 @@ fn exit(msg: &str) -> ! {
 }
 
 fn main() {
-    let matches = App::new("rand_filter")
-        .version("0.2")
-        .author("Jean-Marie Comets <jean.marie.comets@gmail.com>")
-        .about("Filters random lines from stdin, shuffling them if requested")
-        .arg(Arg::with_name("n")
-             .help("Sets the number of dice faces for the roll, must be strictly positive")
-             .required(true)
-             .index(1))
-        .arg(Arg::with_name("shuffle")
-             .help("Specifies that the lines should be shuffled before being printed")
-             .short("-s")
-             .long("--shuffle"))
-        .get_matches();
+    let yml = load_yaml!("cli.yml");
+    let matches = App::from_yaml(yml).get_matches();
 
     let n = matches.value_of("n").unwrap();
 

@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["Jean-Marie Comets <jean.marie.comets@gmail.com>"]
 
 [dependencies]
-clap = "2.24.2"
+clap = { version = "2.24.2", features = ["yaml"] }
 rand = "0.3"
