@@ -3,16 +3,28 @@ extern crate clap;
 extern crate rand;
 
 use std::io;
-use std::io::{Write, BufRead};
+use std::io::{
+    Write,
+    BufRead,
+    BufReader,
+    BufWriter
+};
 use std::process;
+use std::fmt::Debug;
 
 use clap::App;
-use rand::Rng;
 use rand::distributions::{IndependentSample, Range};
+
+fn unwrap_or_exit<T, E: Debug>(r: Result<T, E>, prefix: &str) -> T {
+    r.unwrap_or_else(|e| {
+        let msg = format!("{}: {:?}", prefix, e);
+        exit(&msg);
+    })
+}
 
 fn exit(msg: &str) -> ! {
     let mut err = io::stderr();
-    let _ = write!(err, "{}\n", msg);
+    write!(err, "{}\n", msg).unwrap();
     process::exit(1);
 }
 
@@ -33,27 +45,27 @@ fn main() {
         exit("N should be strictly positive ");
     }
 
-    let input = io::stdin();
-    let handle = input.lock();
-
     let mut rng = rand::thread_rng();
     let between = Range::new(1, n + 1);
 
-    let mut lines: Vec<_> = handle.lines()
-        .map(|l| l.unwrap_or_else(|e| {
-            let msg = format!("Failed to read line: {}", e);
-            exit(&msg);
-        }))
-        .filter(|_| between.ind_sample(&mut rng) == 1)
-        .take_while(|l| l != EOF)
-        .collect();
+    // read from input (lazy)
 
-    if matches.is_present("shuffle") {
-        rng.shuffle(&mut lines);
-    }
+    let input = io::stdin();
+    let reader = BufReader::new(input.lock());
+
+    let lines = reader.lines()
+        .map(|l| unwrap_or_exit(l, "Failed to read line"))
+        .filter(|_| between.ind_sample(&mut rng) == 1)
+        .take_while(|l| l != EOF);
+
+    // write to output
+
+    let output = io::stdout();
+    let mut writer = BufWriter::new(output.lock());
 
     for line in lines {
-        println!("{}", line);
+        let write = writeln!(writer, "{}", line);
+        unwrap_or_exit(write, "Failed to write line");
     }
 }
 

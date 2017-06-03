@@ -1,7 +1,7 @@
 name: "rand_filter"
 version: "0.2"
 author: "Jean-Marie Comets <jean.marie.comets@gmail.com>"
-about: "Filters random lines from stdin, shuffling them if requested"
+about: "Filters random lines from stdin"
 settings:
     - ArgRequiredElseHelp
     - ColoredHelp
@@ -10,7 +10,3 @@ args:
         help: "Sets the number of dice faces for the roll, must be strictly positive"
         required: true
         index: 1
-    - shuffle:
-        help: "Specifies that the lines should be shuffled before being printed"
-        short: "-s"
-        long: "--shuffle"
