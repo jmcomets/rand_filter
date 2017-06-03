@@ -24,7 +24,7 @@ fn unwrap_or_exit<T, E: Debug>(r: Result<T, E>, prefix: &str) -> T {
 
 fn exit(msg: &str) -> ! {
     let mut err = io::stderr();
-    write!(err, "{}\n", msg).unwrap();
+    writeln!(err, "{}", msg).unwrap();
     process::exit(1);
 }
 
